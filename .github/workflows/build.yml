@@ -1,30 +1,43 @@
-name: Patch and Build
+# This is a basic workflow to help you get started with Actions
 
+name: Build Folia
+
+# Controls when the workflow will run
 on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "**" ]
+    branches: [ "main" ]
   pull_request:
+    branches: [ "main" ]
+  schedule:
+    - cron: '0 0 * * *'
 
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  # This workflow contains a single job called "build"
   build:
-    # Only run on PRs if the source branch is on someone else's repo
-    if: ${{ github.event_name != 'pull_request' || github.repository != github.event.pull_request.head.repo.full_name }}
+    # The type of runner that the job will run on
     runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Checkout Git Repository
-        uses: actions/checkout@v3
-      - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@v1
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
-      - name: Set up JDK
-        uses: actions/setup-java@v3
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Runs a set of commands using the runners shell
+      - name: 'Build Folia .jar'
+        run: |
+          git clone https://github.com/PaperMC/Folia
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
+          cd Folia
+          ./gradlew applyPatches
+          ./gradlew createReobfPaperclipJar
+
+      - uses: actions/upload-artifact@v3
         with:
-          distribution: 'temurin'
-          java-version: '17'
-      - name: Configure Git User Details
-        run: git config --global user.email "actions@github.com" && git config --global user.name "Github Actions"
-      - name: Apply Patches
-        run: ./gradlew applyPatches
-      - name: Build
-        run: ./gradlew build
+          name: FoliaToGo
+          path: Folia/build/libs/*.jar

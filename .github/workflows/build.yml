@@ -39,5 +39,5 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: FoliaToGo
+          name: Folia
           path: Folia/build/libs/*.jar

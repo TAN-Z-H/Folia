@@ -31,8 +31,8 @@ jobs:
       - name: 'Build Folia .jar'
         run: |
           git clone https://github.com/PaperMC/Folia
-          git config --global user.email "you@example.com"
-          git config --global user.name "Your Name"
+          git config --global user.email "tzhtzh666@126.com"
+          git config --global user.name "TAN-Z-H"
           cd Folia
           ./gradlew applyPatches
           ./gradlew createReobfPaperclipJar
